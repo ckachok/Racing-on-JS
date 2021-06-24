@@ -24,6 +24,10 @@ function getQuantityElementElements(heightElement) {
  
 function startGame() {
   start.classList.add('hide');
+  gameArea.innerHTML = '';
+  car.style.left = '125px';
+  car.style.top = 'auto';
+  car.style.bottom = '10px';
 
   for (let i = 0; i < getQuantityElementElements(50); i++) {
     const line = document.createElement('div');
@@ -42,6 +46,7 @@ function startGame() {
     gameArea.appendChild(enemy);
 
   }
+  setting.score = 0;
   setting.start = true;
   gameArea.appendChild(car);
   setting.x = car.offsetLeft;
@@ -51,6 +56,8 @@ function startGame() {
 
 function playGame() {
   if (setting.start) {
+    setting.score++;
+    score.innerHTML = `Score:<br> ${setting.score}`;
     moveRoad();
     moveEnemy();
     if (keys.ArrowLeft && setting.x > 0) {
@@ -97,6 +104,18 @@ function moveRoad() {
 function moveEnemy() {
   let enemies = document.querySelectorAll('.enemy');
   enemies.forEach((enemy) => {
+    let carRect = car.getBoundingClientRect(); // метод с помощью которого можно получить объект с данными left, right и другими свойствами
+    let enemyRect = enemy.getBoundingClientRect();
+    
+    if (carRect.top <= enemyRect.bottom &&
+        carRect.right >= enemyRect.left &&
+        carRect.left <= enemyRect.right &&
+        carRect.bottom >= enemyRect.top) {
+      setting.start = false;
+      start.classList.remove('hide');
+      start.innerHTML = `Начать игру<br>Last Score: ${setting.score}`;
+    }
+    
     enemy.y += setting.speed / 2;
     enemy.style.top = enemy.y + 'px';
     if (enemy.y >= document.documentElement.clientHeight) {
